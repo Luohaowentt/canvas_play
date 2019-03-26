@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>一起来看星星吧</title>
+</head>
+<body>
+<canvas></canvas>
+</body>
+</html>
+<script type="text/javascript">
+  function drawStar( cxt , r , R , x , y , rot , borderWidth , borderStyle , fillStyle){
+    cxt.beginPath();
+    for( var i = 0 ; i < 5 ; i ++){
+      cxt.lineTo(Math.cos((18+72*i - rot)/180*Math.PI) * R + x ,- Math.sin((18+72*i - rot )/180*Math.PI) * R + y);
+      cxt.lineTo(Math.cos((54+72*i - rot)/180*Math.PI) * r + x ,- Math.sin((54+72*i - rot )/180*Math.PI) * r + y);
+    }
+    cxt.closePath();
+
+    cxt.lineWidth = borderWidth;
+    cxt.strokeStyle = borderStyle;
+    cxt.fillStyle = fillStyle;
+
+    cxt.fill();
+    cxt.stroke();
+  }
+</script>
