@@ -3,8 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <title>WeChat</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+
+    html,body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    h1{
+      display: inline-block;
+      color: rgba(255, 255, 255, .3);
+      font:bold  70px "微软雅黑";
+      background: no-repeat linear-gradient(110deg, rgba(255, 255, 255, 0) , rgba(255, 255, 255, 0) 15%, rgba(255, 255, 255, 1) 30% , rgba(255, 255, 255, 0) 45%);
+      -webkit-background-clip: text;
+    }
+
+    img{
+      width: 400px;
+      height: 400px;
+      vertical-align: middle;
+    }
+
+    .name{
+      margin-top: 50px;
+      text-align: center  ;
+    }
+
+    .content{
+      /*试试水平垂直居中*/
+      height: 600px;
+      text-align: center;
+    }
+
+    .content:after{
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+
+    #canvas{
+      position: fixed;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      margin: 0 auto;
+      background: linear-gradient(black , darkslateblue);
+      z-index: -9;
+    }
+
+  </style>
 </head>
 <body>
+<canvas id="canvas"></canvas>
+<div class="name">
+  <h1>C h i k a</h1>
+</div>
+<div class="content">
+<img src="./imgForWeiChat/head.jpg"><img src="./imgForWeiChat./info.png">
+</div>
 
 </body>
+<script type="text/javascript">
+  var count = -300
+  var h1 = document.querySelector("h1")
+
+  setInterval(function () {
+    count+= 5
+    if(count > 300 )
+    {
+      count = -300
+    }
+    h1.style.backgroundPosition = count +'px'
+  },20)
+
+  var canvas = document.getElementById('canvas')
+  var context = canvas.getContext("2d");
+  var h = document.documentElement.clientHeight
+  var w = document.documentElement.clientWidth
+  var starArr = []
+  var starNum = 10  //设置星星个数
+  canvas.height = h
+  canvas.width = w * 0.8
+  creatStarArr()  //创建星星数组
+  firstDraw()     //初次绘制
+  draw()          //循环绘制
+
+  function starAttr(r, R, rSpeed, RSpeed, x, y, rot, rotSpeed, color, time, timeSign) {
+    let star = {
+      r,
+      R,  //当前星星的半径大小
+      rSpeed,
+      RSpeed,   //半径变化速度
+      x,
+      y,      //坐标
+      rot,    //角度保存
+      rotSpeed,
+      color,
+      time, //变化时间
+      timeSign
+    }
+    return star
+  }
+
+  function firstDraw() {
+    context.clearRect(0, 0 ,w * 0.8 ,h )
+    for( let i = 0 ; i < starNum ;i++ ) {
+      drawStar(context, starArr[i].r, starArr[i].R, starArr[i].x, starArr[i].y, starArr[i].rot, 3,starArr[i].color, starArr[i].color)
+    }
+  }
+  function draw() {
+    setInterval(() =>{
+        for( var i = 0 ; i < starNum ; i++){
+          var star = starArr[i]
+          if(star.timeSign < star.time){
+            star.rot += star.rotSpeed
+            star.r +=  star.rSpeed
+            star.R += star.RSpeed
+            if (star.rot > 72) {
+              star.rot -= 72
+            }
+            else if(star.rot < 0){
+              star.rot += 72
+            }
+          }
+          else if (star.timeSign >= star.time && star.timeSign < 4 * star.time)
+          {
+          }
+          else if (star.timeSign >= 4 * star.time && star.timeSign < 5 * star.time){
+            star.rot -= star.rotSpeed
+            star.r -=  star.rSpeed
+            star.R -= star.RSpeed
+            if (star.rot > 72) {
+              star.rot -= 72
+            }
+            else if(star.rot < 0){
+              star.rot += 72
+            }
+          }
+          else if (star.timeSign >= 5 * star.time){
+            starArr.splice(i ,1 ,starAttr(0, 0, randomBetween(10, 13) / 40,randomBetween(15, 18) / 40 ,randomBetween( 0 ,w * 8 ) / 10 ,randomBetween( 0 , h ), randomBetween( 0 , 72) ,randomBetween(-100, 100)/80 ,chooseColor() , randomBetween(30 ,50), 0))
+            break
+          }
+          star.timeSign++
+        }
+        firstDraw()
+      },10
+    )
+  }
+
+  function creatStarArr() {  //设置星星数组
+    for(let i = 0 ; i < starNum ;i++){
+      starArr.push(starAttr(0, 0, randomBetween(10, 13) / 40,randomBetween(15, 18) / 40 ,randomBetween( 0 ,w * 8 ) / 10 ,randomBetween( 0 , h ), randomBetween( 0 , 72) , randomBetween(-100, 100)/80 ,chooseColor() , randomBetween(30 ,50), 0)
+      )}
+  }
+
+  function drawStar( cxt , r , R , x , y , rot , borderWidth , borderStyle , fillStyle){
+    cxt.beginPath();
+    for( let i = 0 ; i < 5 ; i ++){
+      cxt.lineTo(Math.cos((18+72*i - rot)/180*Math.PI) * R + x ,- Math.sin((18+72*i - rot )/180*Math.PI) * R + y);
+      cxt.lineTo(Math.cos((54+72*i - rot)/180*Math.PI) * r + x ,- Math.sin((54+72*i - rot )/180*Math.PI) * r + y);
+    }
+    cxt.closePath();
+
+    cxt.lineWidth = borderWidth;
+    cxt.strokeStyle = borderStyle;
+    cxt.fillStyle = fillStyle;
+
+    cxt.fill();
+    cxt.stroke();
+  }
+
+  function chooseColor() {
+    var R = randomBetween(0, 255)
+    var G = randomBetween(0, 255)
+    var B = randomBetween(0, 255)
+    var A = randomBetween(0, 9)/10
+    let RGBA = 'rgba(' + R + ',' + G + ',' + B + ',' + A +')'
+    return RGBA
+  }
+
+  function randomBetween( x ,y ) {  //寻找大于x  小于等于y 之间的随机数  y 需要大于x
+    return Math.floor(Math.random() * (y - x + 1) + x)
+  }
+</script>
 </html>
